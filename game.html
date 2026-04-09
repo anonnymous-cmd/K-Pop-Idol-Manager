@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Pop Star Maker</title>
+    <style>
+        :root {
+            --primary: #ff79c6;
+            --secondary: #bd93f9;
+            --dark: #282a36;
+            --light: #f8f8f2;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        h1 { color: var(--primary); margin-bottom: 10px; }
+        
+        .stats { font-size: 1.5rem; margin: 20px 0; font-weight: bold; }
+        
+        #idol-stage {
+            font-size: 80px;
+            margin: 30px 0;
+            cursor: pointer;
+            transition: transform 0.1s;
+            user-select: none;
+        }
+
+        #idol-stage:active { transform: scale(0.9); }
+
+        .btn-practice {
+            background: var(--primary);
+            border: none;
+            padding: 15px 30px;
+            color: white;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 121, 198, 0.4);
+        }
+
+        .upgrades {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .upgrade-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .upgrade-item button {
+            background: var(--secondary);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .upgrade-item button:disabled {
+            background: #44475a;
+            cursor: not-allowed;
+        }
+
+        .rank-badge {
+            background: var(--secondary);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Idol Producer</h1>
+        <div class="rank-badge" id="rank">Rank: Trainee</div>
+        
+        <div class="stats">
+            ✨ <span id="fame-count">0</span> Fame
+        </div>
+
+        <div id="idol-stage">🎤</div>
+        
+        <button class="btn-practice" onclick="clickFame()">PRACTICE!</button>
+
+        <div class="upgrades">
+            <h3>Management Agency</h3>
+            
+            <div class="upgrade-item">
+                <div>
+                    <strong>Vocal Coach</strong><br>
+                    <small>+1 Fame per click</small>
+                </div>
+                <button onclick="buyCoach()" id="coach-btn">Cost: 15</button>
+            </div>
+
+            <div class="upgrade-item">
+                <div>
+                    <strong>Lightsticks</strong><br>
+                    <small>+2 Fame every second</small>
+                </div>
+                <button onclick="buyLightsticks()" id="fan-btn">Cost: 50</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let fame = 0;
+        let famePerClick = 1;
+        let autoFame = 0;
+        
+        let coachCost = 15;
+        let fanCost = 50;
+
+        const fameDisplay = document.getElementById('fame-count');
+        const rankDisplay = document.getElementById('rank');
+
+        function updateDisplay() {
+            fameDisplay.innerText = Math.floor(fame);
+            
+            // Check buttons
+            document.getElementById('coach-btn').innerText = `Cost: ${coachCost}`;
+            document.getElementById('fan-btn').innerText = `Cost: ${fanCost}`;
+            
+            document.getElementById('coach-btn').disabled = fame < coachCost;
+            document.getElementById('fan-btn').disabled = fame < fanCost;
+
+            // Update Rank
+            if (fame > 1000) rankDisplay.innerText = "Rank: Global Superstar";
+            else if (fame > 500) rankDisplay.innerText = "Rank: Chart Topper";
+            else if (fame > 100) rankDisplay.innerText = "Rank: Rookie of the Year";
+        }
+
+        function clickFame() {
+            fame += famePerClick;
+            // Visual feedback
+            const stage = document.getElementById('idol-stage');
+            stage.style.transform = "scale(1.2)";
+            setTimeout(() => stage.style.transform = "scale(1)", 100);
+            updateDisplay();
+        }
+
+        function buyCoach() {
+            if (fame >= coachCost) {
+                fame -= coachCost;
+                famePerClick += 1;
+                coachCost = Math.round(coachCost * 1.5);
+                updateDisplay();
+            }
+        }
+
+        function buyLightsticks() {
+            if (fame >= fanCost) {
+                fame -= fanCost;
+                autoFame += 2;
+                fanCost = Math.round(fanCost * 1.8);
+                updateDisplay();
+            }
+        }
+
+        // Game Loop (Runs every second)
+        setInterval(() => {
+            fame += autoFame;
+            updateDisplay();
+        }, 1000);
+
+        updateDisplay();
+    </script>
+</body>
+</html>
